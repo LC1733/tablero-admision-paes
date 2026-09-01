@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="es-CL">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0e1420">
+<title>Geometría PAES M1 · Entrenador</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{--bg:#0e1420;--card:#1b2536;--acc:#4dd4ac;--acc2:#5aa9ff;--warn:#ffb84d;--bad:#ff6b7d;--txt:#e8eef7;--mut:#93a4bd;--bd:#27334a}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,Segoe UI,Roboto,sans-serif;background:linear-gradient(160deg,#0b111c,#111b2c);background-attachment:fixed;color:var(--txt)}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+header{padding:18px 20px;border-bottom:1px solid var(--bd);display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;background:#0d1420ee;position:sticky;top:0;z-index:20;backdrop-filter:blur(8px)}
+h1{margin:0;font-size:19px;letter-spacing:.2px}
+h1 span{color:var(--acc)}
+.sub{color:var(--mut);font-size:12px;margin-top:3px}
+nav{display:flex;flex-wrap:wrap;gap:6px;padding:12px 20px;border-bottom:1px solid var(--bd)}
+nav button{background:var(--card);border:1px solid var(--bd);color:var(--txt);padding:8px 14px;border-radius:20px;cursor:pointer;font-size:13px;font-family:inherit}
+nav button.on{background:var(--acc);color:#06231a;border-color:var(--acc);font-weight:600}
+main{padding:20px 20px 70px;max-width:1180px;margin:0 auto}
+section{display:none}section.on{display:block}
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(290px,1fr))}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px 18px}
+.card h3{margin:0 0 8px;font-size:15px;color:var(--acc2)}
+.card p,.card li{font-size:14px;line-height:1.6;color:#d6e0ee}
+.k{color:var(--acc);font-weight:600}
+.f{background:#0f1826;border-left:3px solid var(--acc);padding:8px 12px;border-radius:6px;margin:8px 0;font-family:ui-monospace,Consolas,monospace;font-size:13.5px;color:#ffe9a8}
+.bar{height:9px;background:#111a28;border-radius:9px;overflow:hidden;border:1px solid var(--bd)}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2));width:0}
+.big{font-size:30px;font-weight:700;color:var(--acc);margin:4px 0}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+td,th{border-bottom:1px solid var(--bd);padding:8px 6px;text-align:left}
+th{color:var(--mut);font-weight:600}
+.chk{display:flex;gap:9px;align-items:flex-start;padding:7px 0;font-size:14px}
+.chk input{margin-top:3px;width:17px;height:17px;accent-color:var(--acc)}
+.q{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:15px 17px;margin-bottom:14px}
+.q .en{font-size:14.5px;margin:8px 0 10px;line-height:1.6}
+.opt{display:block;width:100%;text-align:left;background:#111a28;border:1px solid var(--bd);border-radius:8px;padding:10px 12px;margin:6px 0;cursor:pointer;font-size:14px;color:var(--txt);font-family:inherit}
+.opt:hover{border-color:var(--acc2)}
+.opt.ok{background:#12352a;border-color:var(--acc)}
+.opt.bad{background:#3a1a1f;border-color:var(--bad)}
+.opt.sel{border-color:var(--acc2);background:#152238}
+.sol{display:none;margin-top:10px;background:#0f1826;border-left:3px solid var(--warn);padding:10px 13px;border-radius:6px;font-size:13.5px;line-height:1.65;color:#ffe0b0}
+.tag{display:inline-block;font-size:11px;background:#22304a;color:var(--acc2);padding:2px 9px;border-radius:20px}
+.tag.ex{background:#3a2f18;color:var(--warn)}
+canvas{background:#0b111c;border:1px solid var(--bd);border-radius:10px;width:100%;display:block;touch-action:none}
+input[type=range]{width:100%;accent-color:var(--acc)}
+select{width:100%;padding:8px;background:#111a28;color:var(--txt);border:1px solid var(--bd);border-radius:8px;font-family:inherit}
+.mini{color:var(--mut);font-size:12px}
+button.act{background:var(--acc2);border:0;color:#04182e;padding:9px 15px;border-radius:8px;cursor:pointer;font-weight:600;font-size:13px;font-family:inherit}
+button.gh{background:transparent;border:1px solid var(--bd);color:var(--mut);padding:7px 13px;border-radius:8px;cursor:pointer;font-size:12px;font-family:inherit}
+.wk{border-left:3px solid var(--acc2);padding-left:14px;margin-bottom:18px}
+.wk h4{margin:0 0 6px;font-size:15px}
+.sw{display:flex;gap:9px;align-items:center;font-size:13px;color:var(--mut)}
+.sw input{width:17px;height:17px;accent-color:var(--warn)}
+.hide{display:none !important}
+.err{border-left:3px solid var(--bad);background:#2a1218}
+</style>
+</head>
+<body>
+<header>
+<div><h1>Geometría <span>PAES M1</span></h1><div class="sub" id="hsub">Cargando banco de preguntas…</div></div>
+<div style="min-width:220px"><div class="mini">Ejercicios resueltos <b id="pg">0%</b></div><div class="bar"><i id="pgb"></i></div>
+<label class="sw" style="margin-top:9px"><input type="checkbox" id="ex-sw"> Incluir contenido fuera del temario M1</label></div>
+</header>
+<nav id="nav"></nav>
+<main>
+
+<section id="s-inicio" class="on">
+<div class="grid">
+<div class="card"><h3>Qué entra en Geometría M1</h3><p>El temario oficial del eje tiene solo cuatro unidades. Todo lo que se pregunta sale de aquí:</p>
+<ul><li><span class="k">Figuras geométricas:</span> Pitágoras; perímetro y área de triángulos, paralelogramos, trapecios y círculos.</li>
+<li><span class="k">Cuerpos geométricos:</span> área de superficie y volumen de paralelepípedos, cubos y cilindros.</li>
+<li><span class="k">Transformaciones isométricas:</span> puntos y vectores en el plano; rotación, traslación y reflexión.</li>
+<li><span class="k">Semejanza y proporcionalidad:</span> modelos a escala.</li></ul></div>
+<div class="card"><h3>Avance del plan</h3><p class="big" id="cnt">0/28</p><p class="mini">tareas completadas</p><div class="bar"><i id="cb"></i></div></div>
+<div class="card"><h3>Contenido extra</h3><p>Ángulos entre paralelas, polígonos, sector circular, cono, esfera y ecuación de la recta <b>no están</b> en el temario M1 de este proceso. Quedan disponibles con el interruptor de arriba, marcados en naranja, por si quieres repasarlos igual.</p></div>
+</div>
+<div class="card" style="margin-top:16px"><h3>Cómo usarlo</h3><p>Parte por el plan, revisa la teoría de la unidad del día, usa el visualizador para entender la idea y recién ahí resuelve los ejercicios. El ensayo arma 25 preguntas distintas cada vez, así que sirve para repetir.</p>
+<p class="mini">Los datos quedan guardados en este dispositivo. <button class="gh" onclick="reset()">Borrar mi progreso</button></p></div>
+</section>
+
+<section id="s-plan"><div class="card"><h3>Plan de 4 semanas</h3><p class="mini">Una unidad por semana, en el orden en que se apoyan entre sí. Marca cada tarea al terminarla.</p></div><div id="plan"></div></section>
+
+<section id="s-teoria"><div id="teo"></div></section>
+
+<section id="s-formulas"><div class="grid" id="form"></div></section>
+
+<section id="s-visual"><div class="grid" id="vis"></div></section>
+
+<section id="s-ejercicios">
+<div class="card"><h3>Ejercicios con solución</h3><p class="mini">Al elegir una alternativa se abre el desarrollo. Tu respuesta queda guardada. Aciertos: <b id="score">todavía ninguno</b></p>
+<p class="mini" style="margin-top:8px">Filtrar por unidad: <select id="filt" onchange="renderEx()" style="max-width:280px;margin-top:6px"></select></p></div>
+<div id="ex" style="margin-top:14px"></div>
+</section>
+
+<section id="s-ensayo">
+<div class="card" id="en-pre"><h3>Ensayo de 25 preguntas en 45 minutos</h3>
+<p>Se arman 25 preguntas al azar, repartidas entre las unidades disponibles. Sin ver soluciones hasta entregar y sin calculadora. Las omitidas cuentan como incorrectas.</p>
+<p><button class="act" onclick="startTest(false)">Comenzar cronometrado</button>
+<button class="gh" style="margin-left:8px" onclick="startTest(true)">Practicar sin tiempo</button></p>
+<div id="hist"></div></div>
+<div id="en-run" class="hide">
+<div class="card" style="position:sticky;top:74px;z-index:15;display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between">
+<div><div class="mini">Tiempo restante</div><div class="big" id="clock">45:00</div></div>
+<div style="flex:1;min-width:170px"><div class="mini">Respondidas <b id="nresp">0/25</b></div><div class="bar"><i id="nb"></i></div></div>
+<button class="act" onclick="endTest(false)">Entregar ensayo</button></div>
+<div id="en-body" style="margin-top:14px"></div>
+<div style="text-align:center;margin:18px 0"><button class="act" onclick="endTest(false)">Entregar y ver resultados</button></div>
+</div>
+<div id="en-res" class="hide"></div>
+</section>
+</main>
+
+<script>
+/* ================= estado ================= */
+var DATA=null, POOL=[], ANS={}, HIST=[], EXTRA=false, TEST=null;
+var LS={ans:'geo2_ans',plan:'geo2_plan_',hist:'geo2_hist',extra:'geo2_extra'};
+function load(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+
+/* ================= navegación ================= */
+var TABS=[['inicio','Inicio'],['plan','Plan'],['teoria','Teoría'],['formulas','Fórmulas'],['visual','Visualizador'],['ejercicios','Ejercicios'],['ensayo','Ensayo']];
+TABS.forEach(function(t,i){var b=document.createElement('button');b.textContent=t[1];b.className=i===0?'on':'';
+b.onclick=function(){document.querySelectorAll('nav button').forEach(function(x){x.classList.remove('on')});b.classList.add('on');
+document.querySelectorAll('section').forEach(function(s){s.classList.remove('on')});document.getElementById('s-'+t[0]).classList.add('on');
+window.scrollTo(0,0);draws();};document.getElementById('nav').appendChild(b);});
+
+/* ================= plan ================= */
+var PLAN=[
+["Semana 1 · Figuras geométricas",["Perímetro y área de triángulos y paralelogramos","Área de trapecios y áreas compuestas (figura menos figura)","Perímetro y área del círculo; cuidado radio vs diámetro","Teorema de Pitágoras y ternas (3,4,5) (5,12,13) (8,15,17)","Triángulos notables 30-60-90 y 45-45-90","Ejercicios de la unidad Figuras geométricas","Repaso y errores de la semana"]],
+["Semana 2 · Cuerpos geométricos",["Volumen de paralelepípedos y cubos","Volumen del cilindro","Área de superficie de paralelepípedos y cubos","Área de superficie del cilindro: manto más dos tapas","Conversión de unidades: cm³, m³ y litros","Ejercicios de la unidad Cuerpos geométricos","Repaso y errores de la semana"]],
+["Semana 3 · Transformaciones isométricas",["Puntos en el plano: distancia y punto medio","Vectores: componentes, suma y módulo","Traslación según un vector","Reflexión respecto a los ejes y al origen","Rotaciones de 90°, 180° y 270°, horaria y antihoraria","Ejercicios de la unidad Transformaciones isométricas","Repaso y errores de la semana"]],
+["Semana 4 · Semejanza y ensayos",["Semejanza: criterio AA y proporcionalidad de lados","Modelos a escala: mapas, planos y maquetas","Razón k: lados ×k, áreas ×k², volúmenes ×k³","Ejercicios de la unidad Semejanza","Primer ensayo cronometrado y revisión de errores","Segundo ensayo cronometrado","Repaso final del formulario, una pasada completa"]]
+];
+(function(){var d=document.getElementById('plan'),i=0;
+PLAN.forEach(function(p){var w=document.createElement('div');w.className='wk';w.innerHTML='<h4>'+p[0]+'</h4>';
+p[1].forEach(function(x){var id='t'+(i++);var l=document.createElement('label');l.className='chk';
+l.innerHTML='<input type="checkbox" id="'+id+'"><span>'+x+'</span>';w.appendChild(l);});d.appendChild(w);});
+document.querySelectorAll('#plan input').forEach(function(c){c.checked=localStorage.getItem(LS.plan+c.id)==='1';
+c.onchange=function(){localStorage.setItem(LS.plan+c.id,c.checked?'1':'0');updPlan();};});})();
+function updPlan(){var all=document.querySelectorAll('#plan input');
+var n=[].filter.call(all,function(c){return c.checked}).length;
+document.getElementById('cnt').textContent=n+'/'+all.length;
+document.getElementById('cb').style.width=(n/all.length*100)+'%';}
+function reset(){Object.keys(localStorage).filter(function(k){return k.indexOf('geo2_')===0}).forEach(function(k){localStorage.removeItem(k)});location.reload();}
+
+/* ================= teoría ================= */
+var TEORIA=[
+["Figuras geométricas","figuras",
+"<b>Perímetro</b> es el contorno; <b>área</b> es la superficie y va en unidades cuadradas.<br>"+
+"• Triángulo: A = base × altura ÷ 2. La altura es la perpendicular al lado que uses como base, no el lado inclinado.<br>"+
+"• Equilátero de lado a: A = a²√3/4 y altura = a√3/2.<br>"+
+"• Paralelogramos (cuadrado, rectángulo, rombo, romboide): A = base × altura. En el rombo conviene A = D·d/2 con las diagonales.<br>"+
+"• Trapecio: A = (B + b)·h/2, el promedio de las bases por la altura.<br>"+
+"• Círculo: P = 2πr = πd y A = πr². Si el dato es el diámetro, divídelo antes de elevar al cuadrado.<br><br>"+
+"<b>Pitágoras</b> solo vale en triángulos rectángulos: a² + b² = c², con c la hipotenusa. Para un cateto: a = √(c² − b²).<br>"+
+"Memoriza las ternas y sus múltiplos: (3,4,5), (6,8,10), (9,12,15), (5,12,13), (8,15,17), (7,24,25).<br>"+
+"Triángulos notables: 45-45-90 tiene lados x, x, x√2 (la diagonal del cuadrado); 30-60-90 tiene x, x√3, 2x (la mitad de un equilátero).<br><br>"+
+"<b>Áreas compuestas:</b> descompón en figuras simples o resta una de otra. Es la pregunta clásica de la zona sombreada."],
+["Cuerpos geométricos","cuerpos",
+"El temario M1 pide tres cuerpos: <b>paralelepípedo, cubo y cilindro</b>, en volumen y en área de superficie.<br><br>"+
+"<b>Volumen</b> = área de la base × altura en los tres casos.<br>"+
+"• Paralelepípedo: V = a·b·c. • Cubo: V = a³. • Cilindro: V = πr²h.<br><br>"+
+"<b>Área de superficie</b> es la suma de todas las caras.<br>"+
+"• Paralelepípedo: A = 2(ab + ac + bc), tres pares de caras iguales.<br>"+
+"• Cubo: A = 6a², seis cuadrados.<br>"+
+"• Cilindro: A = 2πr² + 2πrh. El manto desenrollado es un rectángulo de base 2πr y altura h; las tapas son dos círculos.<br><br>"+
+"<b>Unidades:</b> 1 m = 100 cm, pero 1 m² = 10.000 cm² y 1 m³ = 1.000.000 cm³. Además 1 L = 1000 cm³ y 1 m³ = 1000 L. Aquí se pierden más puntos que en las fórmulas.<br>"+
+"La diagonal de un cubo de arista a mide a√3; la de una cara, a√2."],
+["Transformaciones isométricas","isometricas",
+"Son los movimientos que <b>conservan forma y tamaño</b>: traslación, rotación y reflexión.<br><br>"+
+"<b>Puntos:</b> P(x, y). Cuadrantes I (+,+), II (−,+), III (−,−), IV (+,−).<br>"+
+"Distancia: d = √((x₂−x₁)² + (y₂−y₁)²), que es Pitágoras aplicado al plano.<br>"+
+"Punto medio: M = ((x₁+x₂)/2, (y₁+y₂)/2).<br><br>"+
+"<b>Vectores:</b> el vector que va de A(x₁,y₁) a B(x₂,y₂) es (x₂−x₁, y₂−y₁). Se suman componente a componente y su módulo es |u| = √(x² + y²).<br><br>"+
+"<b>Traslación</b> según el vector (a,b): (x,y) → (x+a, y+b).<br>"+
+"<b>Reflexión:</b> eje X → (x,−y); eje Y → (−x,y); origen → (−x,−y).<br>"+
+"<b>Rotación</b> en torno al origen, antihoraria: 90° → (−y,x); 180° → (−x,−y); 270° → (y,−x). Una rotación horaria de 90° equivale a una antihoraria de 270°.<br>"+
+"Si se aplican dos transformaciones seguidas, el orden importa: aplica la primera y recién con ese resultado la segunda."],
+["Semejanza y proporcionalidad","semejanza",
+"Dos figuras son <b>semejantes</b> cuando tienen la misma forma y distinto tamaño. Sus ángulos son iguales y sus lados proporcionales.<br>"+
+"El criterio más usado es <b>AA</b>: si dos ángulos son iguales, los triángulos son semejantes.<br><br>"+
+"Si la razón de semejanza es k, entonces:<br>"+
+"• lados y perímetros se multiplican por <b>k</b><br>"+
+"• áreas se multiplican por <b>k²</b><br>"+
+"• volúmenes se multiplican por <b>k³</b><br>"+
+"Este es el contenido que más se pregunta de la unidad, y el error típico es aplicar k donde va k².<br><br>"+
+"<b>Escala:</b> una escala 1:200 significa que 1 cm del plano equivale a 200 cm reales. Para pasar del plano a la realidad se multiplica; de la realidad al plano se divide. Convierte las unidades al final, no al principio.<br><br>"+
+"<b>Sombras y paralelas:</b> si una recta corta dos lados de un triángulo y es paralela al tercero, se forman segmentos proporcionales: a/b = c/d."],
+["Ángulos y polígonos","extra",
+"Estos contenidos no aparecen en el temario M1 de este proceso; sirven de apoyo conceptual.<br><br>"+
+"Complementarios suman 90°, suplementarios suman 180°, los opuestos por el vértice son iguales.<br>"+
+"Entre paralelas cortadas por una transversal hay solo dos valores distintos, y suman 180°: correspondientes y alternos son iguales, colaterales son suplementarios.<br>"+
+"En todo triángulo los ángulos interiores suman 180°, y un ángulo exterior equivale a la suma de los dos interiores no adyacentes.<br>"+
+"Polígono de n lados: interiores = 180°(n−2); cada exterior de uno regular = 360°/n; diagonales = n(n−3)/2."],
+["Círculo, cono y esfera","extra",
+"Fuera del temario M1 de este proceso.<br><br>"+
+"Arco de α grados = (α/360)·2πr. Sector circular = (α/360)·πr².<br>"+
+"El ángulo del centro mide igual que su arco; el ángulo inscrito mide la mitad del ángulo del centro que abarca el mismo arco. Por eso todo ángulo inscrito apoyado en el diámetro mide 90°.<br><br>"+
+"Cono: V = πr²h/3 y A = πr² + πrg, con g la generatriz. Esfera: V = 4πr³/3 y A = 4πr².<br>"+
+"Recta en el plano: m = (y₂−y₁)/(x₂−x₁), y = mx + n. Paralelas tienen igual m; perpendiculares cumplen m₁·m₂ = −1."]
+];
+document.getElementById('teo').innerHTML=TEORIA.map(function(t){
+return '<div class="card '+(t[1]==='extra'?'u-extra':'')+'" style="margin-bottom:14px"><span class="tag'+(t[1]==='extra'?' ex':'')+'">'+
+(t[1]==='extra'?'Fuera del temario M1':'Unidad del temario')+'</span><h3 style="margin-top:8px">'+t[0]+'</h3><p>'+t[2]+'</p></div>';}).join('');
+
+/* ================= fórmulas ================= */
+var FORM=[
+["Figuras geométricas","figuras",["Triángulo: A = b·h / 2","Equilátero lado a: A = a²√3/4 ; h = a√3/2","Cuadrado: A = a² ; P = 4a ; diagonal = a√2","Rectángulo: A = b·h ; P = 2(b+h)","Rombo: A = D·d / 2","Romboide: A = b·h","Trapecio: A = (B+b)·h / 2","Círculo: P = 2πr = πd ; A = πr²"]],
+["Pitágoras","figuras",["a² + b² = c²  (c = hipotenusa)","Cateto: a = √(c² − b²)","Ternas: (3,4,5) (5,12,13) (8,15,17) (7,24,25)","45-45-90 → x , x , x√2","30-60-90 → x , x√3 , 2x"]],
+["Cuerpos geométricos","cuerpos",["Paralelepípedo: V = a·b·c ; A = 2(ab+ac+bc)","Cubo: V = a³ ; A = 6a² ; diagonal = a√3","Cilindro: V = πr²h","Cilindro: A total = 2πr² + 2πrh","Cilindro: manto = 2πrh","1 L = 1000 cm³ ; 1 m³ = 1000 L"]],
+["Plano y vectores","isometricas",["Distancia: d = √((x₂−x₁)² + (y₂−y₁)²)","Punto medio: M = ((x₁+x₂)/2 , (y₁+y₂)/2)","Vector de A a B: (x₂−x₁ , y₂−y₁)","Suma: (a,b) + (c,d) = (a+c , b+d)","Módulo: |u| = √(x² + y²)"]],
+["Transformaciones","isometricas",["Traslación (a,b): (x,y) → (x+a , y+b)","Reflexión eje X: (x,y) → (x, −y)","Reflexión eje Y: (x,y) → (−x, y)","Reflexión en el origen: (x,y) → (−x, −y)","Rotación 90° antihoraria: (x,y) → (−y, x)","Rotación 180°: (x,y) → (−x, −y)","Rotación 270° antihoraria: (x,y) → (y, −x)"]],
+["Semejanza","semejanza",["Razón k → lados y perímetros ×k","Razón k → áreas ×k²","Razón k → volúmenes ×k³","Escala 1:n → real = plano × n","Thales: a/b = c/d"]],
+["Ángulos y polígonos","extra",["Recta = 180° ; vuelta = 360°","Complementarios = 90° ; suplementarios = 180°","Interiores del triángulo = 180°","Polígono n lados: interiores = 180°(n−2)","Cada exterior regular = 360°/n","Diagonales = n(n−3)/2"]],
+["Círculo, cono y esfera","extra",["Arco = (α/360)·2πr","Sector = (α/360)·πr²","Ángulo del centro = 2 × ángulo inscrito","Cono: V = πr²h/3 ; A = πr² + πrg","Esfera: V = 4πr³/3 ; A = 4πr²","Pirámide: V = A base · h / 3","Recta: y = mx + n ; m₁·m₂ = −1 si ⊥"]]
+];
+document.getElementById('form').innerHTML=FORM.map(function(f){
+return '<div class="card '+(f[1]==='extra'?'u-extra':'')+'"><h3>'+f[0]+(f[1]==='extra'?' <span class="tag ex">extra</span>':'')+'</h3>'+
+f[2].map(function(x){return '<div class="f">'+x+'</div>'}).join('')+'</div>';}).join('');
+
+/* ================= visualizadores ================= */
+document.getElementById('vis').innerHTML=
+'<div class="card"><h3>Teorema de Pitágoras</h3><canvas id="c1"></canvas>'+
+'<p class="mini">Cateto a</p><input type="range" id="r1a" min="1" max="12" value="3" oninput="v1()">'+
+'<p class="mini">Cateto b</p><input type="range" id="r1b" min="1" max="12" value="4" oninput="v1()"><p id="t1" class="mini"></p></div>'+
+'<div class="card"><h3>Cilindro: volumen y superficie</h3><canvas id="c2"></canvas>'+
+'<p class="mini">Radio</p><input type="range" id="r2r" min="1" max="8" value="3" oninput="v2()">'+
+'<p class="mini">Altura</p><input type="range" id="r2h" min="1" max="12" value="6" oninput="v2()"><p id="t2" class="mini"></p></div>'+
+'<div class="card"><h3>Vector de traslación</h3><canvas id="c3"></canvas>'+
+'<p class="mini">Componente x del vector</p><input type="range" id="r3x" min="-7" max="7" value="4" oninput="v3()">'+
+'<p class="mini">Componente y del vector</p><input type="range" id="r3y" min="-7" max="7" value="3" oninput="v3()"><p id="t3" class="mini"></p></div>'+
+'<div class="card"><h3>Semejanza: k, k² y k³</h3><canvas id="c4"></canvas>'+
+'<p class="mini">Razón de semejanza k</p><input type="range" id="r4" min="10" max="30" value="20" oninput="v4()"><p id="t4" class="mini"></p></div>'+
+'<div class="card"><h3>Distancia y punto medio</h3><canvas id="c5"></canvas>'+
+'<p class="mini">x₁</p><input type="range" id="ax" min="-8" max="8" value="-4" oninput="v5()">'+
+'<p class="mini">y₁</p><input type="range" id="ay" min="-8" max="8" value="-2" oninput="v5()">'+
+'<p class="mini">x₂</p><input type="range" id="bx" min="-8" max="8" value="4" oninput="v5()">'+
+'<p class="mini">y₂</p><input type="range" id="by" min="-8" max="8" value="3" oninput="v5()"><p id="t5" class="mini"></p></div>'+
+'<div class="card"><h3>Rotación y reflexión</h3><canvas id="c6"></canvas>'+
+'<p class="mini">Transformación</p><select id="tr" onchange="v6()">'+
+'<option value="tx">Traslación (+3, +2)</option><option value="rx">Reflexión eje X</option><option value="ry">Reflexión eje Y</option>'+
+'<option value="r90">Rotación 90° antihoraria</option><option value="r180">Rotación 180°</option><option value="r270">Rotación 270° antihoraria</option>'+
+'</select><p id="t6" class="mini"></p></div>'+
+'<div class="card u-extra"><h3>Ángulos entre paralelas <span class="tag ex">extra</span></h3><canvas id="c7"></canvas>'+
+'<p class="mini">Inclinación de la transversal</p><input type="range" id="r7" min="25" max="155" value="55" oninput="v7()"><p id="t7" class="mini"></p></div>'+
+'<div class="card u-extra"><h3>Sector circular <span class="tag ex">extra</span></h3><canvas id="c8"></canvas>'+
+'<p class="mini">Ángulo</p><input type="range" id="r8" min="10" max="360" value="90" oninput="v8()">'+
+'<p class="mini">Radio</p><input type="range" id="r8r" min="1" max="10" value="5" oninput="v8()"><p id="t8" class="mini"></p></div>';
+
+/* P1 corregido: se fija tambien el alto en CSS, si no el canvas crece por el devicePixelRatio */
+function cv(id,H){var c=document.getElementById(id);if(!c||!c.clientWidth)return null;
+var d=window.devicePixelRatio||1,W=c.clientWidth;c.width=W*d;c.height=H*d;c.style.height=H+'px';
+var x=c.getContext('2d');x.setTransform(d,0,0,d,0,0);x.clearRect(0,0,W,H);return {x:x,W:W,H:H};}
+function line(x,a,b,c,d,col,w){x.beginPath();x.moveTo(a,b);x.lineTo(c,d);x.strokeStyle=col;x.lineWidth=w||2;x.stroke();}
+function txt(x,s,a,b,col){x.fillStyle=col||'#e8eef7';x.font='13px system-ui';x.fillText(s,a,b);}
+function plano(id,H){var g=cv(id,H);if(!g)return null;var x=g.x,W=g.W,u=Math.min(W,H)/20,cx=W/2,cy=H/2;
+for(var i=-12;i<=12;i++){line(x,cx+i*u,0,cx+i*u,H,'#1c2740',1);line(x,0,cy+i*u,W,cy+i*u,'#1c2740',1);}
+line(x,0,cy,W,cy,'#4a5a78',1.5);line(x,cx,0,cx,H,'#4a5a78',1.5);
+g.u=u;g.P=function(a,b){return [cx+a*u,cy-b*u]};return g;}
+function dot(x,p,col,lab){x.beginPath();x.arc(p[0],p[1],5,0,7);x.fillStyle=col;x.fill();if(lab)txt(x,lab,p[0]+8,p[1]-8,col);}
+function arrow(x,a,b,c,d,col){line(x,a,b,c,d,col,2);var an=Math.atan2(d-b,c-a);x.beginPath();x.moveTo(c,d);
+x.lineTo(c-9*Math.cos(an-0.4),d-9*Math.sin(an-0.4));x.lineTo(c-9*Math.cos(an+0.4),d-9*Math.sin(an+0.4));x.closePath();x.fillStyle=col;x.fill();}
+
+function v1(){var g=cv('c1',250);if(!g)return;var x=g.x;
+var a=+document.getElementById('r1a').value,b=+document.getElementById('r1b').value;
+var s=Math.min((g.W-110)/12,(g.H-80)/12),ox=55,oy=g.H-40;
+x.beginPath();x.moveTo(ox,oy);x.lineTo(ox+b*s,oy);x.lineTo(ox,oy-a*s);x.closePath();
+x.fillStyle='#12352a';x.fill();x.strokeStyle='#4dd4ac';x.lineWidth=2;x.stroke();
+x.strokeStyle='#ffb84d';x.strokeRect(ox,oy-14,14,14);
+txt(x,'b = '+b,ox+b*s*0.45,oy+20);txt(x,'a = '+a,8,oy-a*s*0.5);
+var h=Math.sqrt(a*a+b*b);txt(x,'c = '+h.toFixed(2),ox+b*s*0.5,oy-a*s*0.5-6,'#ffe9a8');
+document.getElementById('t1').innerHTML=a+'² + '+b+'² = '+(a*a)+' + '+(b*b)+' = '+(a*a+b*b)+' → c = √'+(a*a+b*b)+' = <b>'+h.toFixed(3)+'</b>'+(Number.isInteger(h)?' · terna pitagórica':'');}
+
+function v2(){var g=cv('c2',250);if(!g)return;var x=g.x;
+var r=+document.getElementById('r2r').value,h=+document.getElementById('r2h').value;
+var s=Math.min(150/12,(g.W/2-70)/16),rw=r*s,hh=h*s,cx=70,cy=g.H/2;
+x.beginPath();x.moveTo(cx-rw,cy-hh/2);x.lineTo(cx-rw,cy+hh/2);x.lineTo(cx+rw,cy+hh/2);x.lineTo(cx+rw,cy-hh/2);x.closePath();
+x.fillStyle='#152238';x.fill();x.strokeStyle='#5aa9ff';x.lineWidth=2;x.stroke();
+x.beginPath();x.ellipse(cx,cy+hh/2,rw,rw*0.28,0,0,7);x.stroke();
+x.beginPath();x.ellipse(cx,cy-hh/2,rw,rw*0.28,0,0,7);x.fillStyle='#12352a';x.fill();x.stroke();
+txt(x,'r = '+r,cx+4,cy-hh/2-6,'#4dd4ac');txt(x,'h = '+h,cx+rw+6,cy);
+var bx=g.W/2+20,bw=Math.min(g.W-bx-20,2*Math.PI*r*s*0.35);
+x.fillStyle='#0f1826';x.fillRect(bx,cy-hh/2,bw,hh);x.strokeStyle='#4dd4ac';x.strokeRect(bx,cy-hh/2,bw,hh);
+txt(x,'manto: 2πr × h',bx,cy-hh/2-10,'#93a4bd');txt(x,'+ 2 tapas πr²',bx,cy+hh/2+18,'#93a4bd');
+var V=Math.PI*r*r*h,A=2*Math.PI*r*r+2*Math.PI*r*h;
+document.getElementById('t2').innerHTML='V = π·'+r+'²·'+h+' = <b>'+(r*r*h)+'π</b> ≈ '+V.toFixed(1)+' u³ · A = 2π·'+r+'² + 2π·'+r+'·'+h+' = <b>'+(2*r*r+2*r*h)+'π</b> ≈ '+A.toFixed(1)+' u²';}
+
+function v3(){var g=plano('c3',270);if(!g)return;var x=g.x;
+var vx=+document.getElementById('r3x').value,vy=+document.getElementById('r3y').value;
+var F=[[-6,-4],[-2,-4],[-2,-1]];
+var poly=function(pts,col,fill){x.beginPath();pts.forEach(function(p,i){var q=g.P(p[0],p[1]);i?x.lineTo(q[0],q[1]):x.moveTo(q[0],q[1])});
+x.closePath();x.fillStyle=fill;x.fill();x.strokeStyle=col;x.lineWidth=2;x.stroke();};
+var G=F.map(function(p){return [p[0]+vx,p[1]+vy]});
+poly(F,'#5aa9ff','#152238');poly(G,'#4dd4ac','#12352a');
+var a=g.P(F[0][0],F[0][1]),b=g.P(G[0][0],G[0][1]);arrow(x,a[0],a[1],b[0],b[1],'#ffb84d');
+dot(x,a,'#5aa9ff','A');dot(x,b,'#4dd4ac',"A'");
+document.getElementById('t3').innerHTML='Vector ('+vx+', '+vy+') · A('+F[0][0]+','+F[0][1]+") → A'("+G[0][0]+','+G[0][1]+') · cada punto se mueve lo mismo, la figura no cambia de forma ni de tamaño.';}
+
+function v4(){var g=cv('c4',250);if(!g)return;var x=g.x;
+var k=(+document.getElementById('r4').value)/10;
+var w=40,h=28,ox=30,oy=g.H-40;
+x.fillStyle='#152238';x.fillRect(ox,oy-h,w,h);x.strokeStyle='#5aa9ff';x.lineWidth=2;x.strokeRect(ox,oy-h,w,h);
+txt(x,'original',ox,oy+18,'#5aa9ff');
+var W2=w*k,H2=h*k,ox2=ox+w+45;
+x.fillStyle='#12352a';x.fillRect(ox2,oy-H2,W2,H2);x.strokeStyle='#4dd4ac';x.strokeRect(ox2,oy-H2,W2,H2);
+txt(x,'× k',ox2,oy+18,'#4dd4ac');
+document.getElementById('t4').innerHTML='k = <b>'+k.toFixed(1)+'</b> → lados y perímetro ×'+k.toFixed(1)+' · área ×<b>'+(k*k).toFixed(2)+'</b> · volumen ×<b>'+(k*k*k).toFixed(2)+'</b>';}
+
+function v5(){var g=plano('c5',270);if(!g)return;var x=g.x;
+var ax=+document.getElementById('ax').value,ay=+document.getElementById('ay').value,bx=+document.getElementById('bx').value,by=+document.getElementById('by').value;
+var A=g.P(ax,ay),B=g.P(bx,by),M=g.P((ax+bx)/2,(ay+by)/2);
+line(x,A[0],A[1],B[0],B[1],'#5aa9ff',2);line(x,A[0],A[1],B[0],A[1],'#ffb84d',1.5);line(x,B[0],A[1],B[0],B[1],'#ffb84d',1.5);
+dot(x,A,'#4dd4ac','A('+ax+','+ay+')');dot(x,B,'#4dd4ac','B('+bx+','+by+')');dot(x,M,'#ff8fb0','M');
+var d=Math.hypot(bx-ax,by-ay);
+document.getElementById('t5').innerHTML='d = √(('+(bx-ax)+')² + ('+(by-ay)+')²) = <b>'+d.toFixed(3)+'</b> · M = <b>('+((ax+bx)/2)+' , '+((ay+by)/2)+')</b>';}
+
+function v6(){var g=plano('c6',270);if(!g)return;var x=g.x;
+var F=[[2,1],[6,1],[6,4]],t=document.getElementById('tr').value;
+var f={tx:function(p){return [p[0]+3,p[1]+2]},rx:function(p){return [p[0],-p[1]]},ry:function(p){return [-p[0],p[1]]},
+r90:function(p){return [-p[1],p[0]]},r180:function(p){return [-p[0],-p[1]]},r270:function(p){return [p[1],-p[0]]}}[t];
+var poly=function(pts,col,fill){x.beginPath();pts.forEach(function(p,i){var q=g.P(p[0],p[1]);i?x.lineTo(q[0],q[1]):x.moveTo(q[0],q[1])});
+x.closePath();x.fillStyle=fill;x.fill();x.strokeStyle=col;x.lineWidth=2;x.stroke();};
+poly(F,'#5aa9ff','#152238');var G=F.map(f);poly(G,'#4dd4ac','#12352a');
+F.forEach(function(p,i){dot(x,g.P(p[0],p[1]),'#5aa9ff',String.fromCharCode(65+i))});
+G.forEach(function(p,i){dot(x,g.P(p[0],p[1]),'#4dd4ac',String.fromCharCode(65+i)+"'")});
+var nm={tx:'(x,y) → (x+3, y+2)',rx:'(x,y) → (x, −y)',ry:'(x,y) → (−x, y)',r90:'(x,y) → (−y, x)',r180:'(x,y) → (−x, −y)',r270:'(x,y) → (y, −x)'}[t];
+document.getElementById('t6').innerHTML='<b>'+nm+'</b> · '+F.map(function(p,i){return '('+p+')→('+G[i]+')'}).join(' · ');}
+
+/* P3 y P4 corregidos: rotulos en el sector correcto y sin la linea muerta */
+function v7(){var g=cv('c7',250);if(!g)return;var x=g.x,W=g.W,a=+document.getElementById('r7').value;
+line(x,15,80,W-15,80,'#5aa9ff',2);line(x,15,180,W-15,180,'#5aa9ff',2);
+var t=Math.tan(a*Math.PI/180),cx=W/2,dx=100/t;
+line(x,cx-2*dx,-120,cx+2*dx,280,'#ffb84d',2);
+txt(x,(180-a)+'°',cx+10,72,'#ffb84d');txt(x,a+'°',Math.max(6,cx-44),72);
+var cx2=cx+dx;txt(x,(180-a)+'°',Math.min(W-40,cx2+10),172,'#ffb84d');txt(x,a+'°',Math.max(6,cx2-44),172);
+txt(x,'r₁ ∥ r₂',W-64,60,'#93a4bd');
+document.getElementById('t7').innerHTML='Solo hay dos valores: <b>'+a+'°</b> y <b>'+(180-a)+'°</b>, y siempre suman 180°.';}
+
+function v8(){var g=cv('c8',250);if(!g)return;var x=g.x,a=+document.getElementById('r8').value,r=+document.getElementById('r8r').value;
+var R=95,cx=g.W/2,cy=g.H/2;
+x.beginPath();x.arc(cx,cy,R,0,2*Math.PI);x.strokeStyle='#27334a';x.lineWidth=2;x.stroke();
+x.beginPath();x.moveTo(cx,cy);x.arc(cx,cy,R,0,-a*Math.PI/180,true);x.closePath();x.fillStyle='#12352a';x.fill();x.strokeStyle='#4dd4ac';x.stroke();
+txt(x,a+'°',cx+14,cy-8,'#4dd4ac');txt(x,'r = '+r,cx+R/2-10,cy+18);
+document.getElementById('t8').innerHTML='Sector = ('+a+'/360)·π·'+r+'² = <b>'+((a/360)*Math.PI*r*r).toFixed(2)+'</b> u² · arco = <b>'+((a/360)*2*Math.PI*r).toFixed(2)+'</b> u';}
+
+function draws(){[v1,v2,v3,v4,v5,v6,v7,v8].forEach(function(f){try{f()}catch(e){}});}
+window.addEventListener('resize',draws);
+
+/* ================= ejercicios ================= */
+function pool(){return DATA.preguntas.filter(function(q){return EXTRA||q.u!=='extra'});}
+function renderEx(){
+var f=document.getElementById('filt').value;
+var list=pool().filter(function(q){return f==='todas'||q.u===f});
+document.getElementById('ex').innerHTML=list.length?list.map(function(q){
+return '<div class="q" id="q_'+q.id+'"><span class="tag'+(q.u==='extra'?' ex':'')+'">'+DATA.unidades[q.u]+' · '+q.t+'</span>'+
+'<div class="en">'+q.q+'</div>'+q.o.map(function(o,j){
+return '<button class="opt" data-i="'+j+'" onclick="answer(\''+q.id+'\','+j+')">'+String.fromCharCode(65+j)+') '+o+'</button>'}).join('')+
+'<div class="sol"><b>Solución:</b> '+q.s+'</div></div>'}).join(''):
+'<div class="card"><p>No hay preguntas en esta unidad todavía.</p></div>';
+list.forEach(function(q){if(ANS[q.id]!==undefined)paint(q,ANS[q.id])});
+updScore();}
+function paint(q,j){var el=document.getElementById('q_'+q.id);if(!el)return;
+el.querySelectorAll('.opt').forEach(function(o,k){o.disabled=true;o.classList.remove('sel');
+if(k===q.r)o.classList.add('ok');else if(k===j)o.classList.add('bad')});
+el.querySelector('.sol').style.display='block';}
+/* P2 corregido: el puntaje se recalcula desde las respuestas guardadas, no se incrementa */
+function answer(id,j){if(ANS[id]!==undefined)return;ANS[id]=j;save(LS.ans,ANS);
+paint(DATA.preguntas.filter(function(q){return q.id===id})[0],j);updScore();}
+function updScore(){var p=pool(),n=0,ok=0;
+p.forEach(function(q){if(ANS[q.id]!==undefined){n++;if(ANS[q.id]===q.r)ok++}});
+document.getElementById('score').textContent=n?(ok+' de '+n+' respondidas'):'todavía ninguno';
+var pct=p.length?Math.round(n/p.length*100):0;
+document.getElementById('pg').textContent=pct+'%';document.getElementById('pgb').style.width=pct+'%';}
+
+/* ================= ensayo ================= */
+function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function pickSet(n){var by={},order=[];
+pool().forEach(function(q){if(!by[q.u]){by[q.u]=[];order.push(q.u)}by[q.u].push(q)});
+order.forEach(function(u){shuffle(by[u])});
+var out=[],i=0;while(out.length<n){var added=false;
+for(var k=0;k<order.length;k++){var l=by[order[k]];if(l[i]){out.push(l[i]);added=true;if(out.length===n)break}}
+if(!added)break;i++;}
+return shuffle(out);}
+function startTest(free){
+TEST={items:pickSet(25),ans:{},left:2700,free:!!free,timer:null};
+document.getElementById('en-pre').classList.add('hide');document.getElementById('en-res').classList.add('hide');
+document.getElementById('en-run').classList.remove('hide');
+document.getElementById('en-body').innerHTML=TEST.items.map(function(q,i){
+return '<div class="q" id="e_'+i+'"><span class="tag'+(q.u==='extra'?' ex':'')+'">'+DATA.unidades[q.u]+' · '+(i+1)+' de 25</span>'+
+'<div class="en">'+q.q+'</div>'+q.o.map(function(o,j){
+return '<button class="opt" onclick="pick('+i+','+j+',this)">'+String.fromCharCode(65+j)+') '+o+'</button>'}).join('')+'</div>'}).join('');
+if(free){document.getElementById('clock').textContent='sin tiempo';document.getElementById('clock').style.color='#93a4bd';}
+else{tick();TEST.timer=setInterval(function(){TEST.left--;tick();if(TEST.left<=0)endTest(true)},1000);}
+prog();window.scrollTo(0,0);}
+function tick(){var m=String(Math.floor(TEST.left/60)),s=String(TEST.left%60);
+var c=document.getElementById('clock');c.textContent=(m.length<2?'0':'')+m+':'+(s.length<2?'0':'')+s;
+c.style.color=TEST.left<300?'#ff6b7d':'#4dd4ac';}
+function pick(i,j,el){TEST.ans[i]=j;
+el.parentNode.querySelectorAll('.opt').forEach(function(o){o.classList.remove('sel')});el.classList.add('sel');prog();}
+function prog(){var n=Object.keys(TEST.ans).length;document.getElementById('nresp').textContent=n+'/25';
+document.getElementById('nb').style.width=(n/25*100)+'%';}
+function endTest(auto){if(TEST.timer)clearInterval(TEST.timer);
+document.getElementById('en-run').classList.add('hide');
+var by={},ok=0;
+TEST.items.forEach(function(q,i){var c=TEST.ans[i]===q.r;if(c)ok++;
+if(!by[q.u])by[q.u]=[0,0];by[q.u][1]++;if(c)by[q.u][0]++;});
+var pct=ok/25;
+var nivel=pct>=.85?'Nivel alto en el eje':pct>=.7?'Bien, afina detalles':pct>=.5?'Intermedio, sigue el plan':'Conviene volver a la teoría';
+var col=pct>=.7?'#4dd4ac':pct>=.5?'#ffb84d':'#ff6b7d';
+var filas=Object.keys(by).map(function(u){var v=by[u],p=v[0]/v[1];
+return '<tr><td>'+DATA.unidades[u]+'</td><td>'+v[0]+'/'+v[1]+'</td><td>'+Math.round(p*100)+'%</td><td>'+
+(p>=.7?'Dominado':p>=.4?'Reforzar':'Prioridad')+'</td></tr>'}).join('');
+var det=TEST.items.map(function(q,i){var c=TEST.ans[i]===q.r;
+var dado=TEST.ans[i]===undefined?'<i>sin responder</i>':String.fromCharCode(65+TEST.ans[i])+') '+q.o[TEST.ans[i]];
+return '<div class="q"><span class="tag'+(q.u==='extra'?' ex':'')+'">'+DATA.unidades[q.u]+' · '+(i+1)+'</span> '+
+'<b style="color:'+(c?'#4dd4ac':'#ff6b7d')+'">'+(c?'Correcta':'Incorrecta')+'</b><div class="en">'+q.q+'</div>'+
+'<p class="mini">Tu respuesta: '+dado+'<br>Correcta: <b style="color:#4dd4ac">'+String.fromCharCode(65+q.r)+') '+q.o[q.r]+'</b></p>'+
+'<div class="sol" style="display:block"><b>Solución:</b> '+q.s+'</div></div>'}).join('');
+var usado=TEST.free?'sin tiempo':(Math.floor((2700-TEST.left)/60)+' min '+((2700-TEST.left)%60)+' s');
+HIST.unshift({d:new Date().toISOString().slice(0,10),ok:ok,pct:Math.round(pct*100),extra:EXTRA});
+HIST=HIST.slice(0,12);save(LS.hist,HIST);
+var r=document.getElementById('en-res');r.classList.remove('hide');
+r.innerHTML='<div class="grid">'+
+'<div class="card"><h3>Correctas</h3><p class="big">'+ok+'/25</p><div class="bar"><i style="width:'+(pct*100)+'%"></i></div></div>'+
+'<div class="card"><h3>Logro en Geometría</h3><p class="big" style="color:'+col+'">'+Math.round(pct*100)+'%</p><p class="mini">'+nivel+'</p></div>'+
+'<div class="card"><h3>Tiempo</h3><p class="big" style="font-size:22px">'+usado+'</p><p class="mini">'+(auto?'Se acabó el tiempo':'Entregado por ti')+' · '+Object.keys(TEST.ans).length+' respondidas</p></div></div>'+
+'<div class="card" style="margin-top:16px"><h3>Por unidad del temario</h3><table><tr><th>Unidad</th><th>Correctas</th><th>Logro</th><th>Estado</th></tr>'+filas+'</table>'+
+'<p class="mini" style="margin-top:10px">Esto mide tu logro en el eje Geometría, no un puntaje PAES. La prueba M1 tiene 65 preguntas repartidas en cuatro ejes: Números, Álgebra y funciones, Geometría, y Probabilidad y estadística.</p></div>'+
+'<div class="card" style="margin-top:16px;text-align:center"><button class="act" onclick="backToStart()">Volver al inicio del ensayo</button></div>'+
+'<h3 style="margin:22px 0 12px;color:#5aa9ff">Revisión pregunta por pregunta</h3>'+det;
+renderHist();window.scrollTo(0,0);}
+function backToStart(){document.getElementById('en-res').classList.add('hide');
+document.getElementById('en-pre').classList.remove('hide');window.scrollTo(0,0);}
+function renderHist(){var h=document.getElementById('hist');
+h.innerHTML=HIST.length?'<h3 style="margin-top:18px">Ensayos anteriores</h3><table><tr><th>Fecha</th><th>Correctas</th><th>Logro</th></tr>'+
+HIST.map(function(r){return '<tr><td>'+r.d+'</td><td>'+r.ok+'/25</td><td>'+r.pct+'%</td></tr>'}).join('')+'</table>':
+'<p class="mini" style="margin-top:14px">Todavía no has rendido ningún ensayo.</p>';}
+
+/* ================= extras y arranque ================= */
+function applyExtra(){document.querySelectorAll('.u-extra').forEach(function(e){e.classList.toggle('hide',!EXTRA)});
+var f=document.getElementById('filt'),cur=f.value||'todas';
+f.innerHTML='<option value="todas">Todas las unidades</option>'+Object.keys(DATA.unidades).filter(function(u){return EXTRA||u!=='extra'})
+.map(function(u){return '<option value="'+u+'">'+DATA.unidades[u]+'</option>'}).join('');
+f.value=[].some.call(f.options,function(o){return o.value===cur})?cur:'todas';
+renderEx();draws();}
+function boot(d){DATA=d;ANS=load(LS.ans,{});HIST=load(LS.hist,[]);EXTRA=load(LS.extra,false);
+document.getElementById('ex-sw').checked=EXTRA;
+document.getElementById('ex-sw').onchange=function(){EXTRA=this.checked;save(LS.extra,EXTRA);applyExtra();};
+document.getElementById('hsub').textContent=DATA.preguntas.length+' preguntas · temario Admisión 2027';
+applyExtra();updPlan();renderHist();draws();setTimeout(draws,150);}
+fetch('preguntas.json',{cache:'no-cache'}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(boot)
+.catch(function(){document.getElementById('hsub').textContent='No se pudo cargar el banco de preguntas';
+document.querySelector('main').insertAdjacentHTML('afterbegin',
+'<div class="card err"><h3>Falta preguntas.json</h3><p>La app lee las preguntas desde el archivo <b>preguntas.json</b>, que debe estar en la misma carpeta y servirse por HTTP. Abierta directamente desde el disco (file://) el navegador bloquea esa lectura.</p><p class="mini">Publícala en GitHub Pages, o levanta un servidor local con <b>python3 -m http.server</b> dentro de la carpeta.</p></div>');});
+if('serviceWorker' in navigator)window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})});
+</script>
+</body></html>
